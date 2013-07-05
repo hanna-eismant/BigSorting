@@ -2,12 +2,17 @@
  * @author Hanna Eismant
  * 13.11.12
  */
+
+import org.apache.log4j.Logger;
+
 import java.util.concurrent.ForkJoinPool;
 
 /**
  * Запускатор программы.
  */
 public class Runner {
+
+    protected static Logger logger = Logger.getLogger(Runner.class.getName());
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
@@ -17,9 +22,9 @@ public class Runner {
         mainTask.setMainFileName(ApplicationProperties.getInFileName());
         pool.invoke(mainTask);
 
-        System.out.println("[INFO] Sorting is complete. Gratis!");
+        logger.info("Sorting is complete. Gratis!");
         long end = System.currentTimeMillis();
         long delay = end - start;
-        System.out.println("[INFO] Time: " + delay + "ms");
+        logger.debug(String.format("Time: %s ms", delay));
     }
 }

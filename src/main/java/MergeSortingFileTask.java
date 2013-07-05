@@ -3,6 +3,8 @@
  * 13.11.12
  */
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,12 +17,14 @@ import java.util.concurrent.RecursiveAction;
 
 public class MergeSortingFileTask extends RecursiveAction {
 
+    protected static Logger logger = Logger.getLogger(MergeSortingFileTask.class.getName());
+
     //    имя файла для обработки
-    private String mainFileName;
+    protected String mainFileName;
     //    имя одного временного файла
-    private String tempFileName0;
+    protected String tempFileName0;
     //    имя второго временного файла
-    private String tempFileName1;
+    protected String tempFileName1;
 
     /**
      * Задать файл для обработки.
@@ -31,8 +35,8 @@ public class MergeSortingFileTask extends RecursiveAction {
         mainFileName = pMainFileName;
     }
 
-    private void merge() throws IOException {
-        System.out.println("[INFO] Merge files");
+    protected void merge() throws IOException {
+        logger.debug("Merge files");
 
 //        файлы
         FileOutputStream resultFile = new FileOutputStream(mainFileName);
@@ -99,7 +103,7 @@ public class MergeSortingFileTask extends RecursiveAction {
     protected void compute() {
 //        если не задано имя исходного (главного) файла, то выдаем ошибку и закрываемся
         if (mainFileName == null || mainFileName.isEmpty()) {
-            System.err.println("[ERROR] Filename not set");
+            logger.error("Filename not set");
             return;
         }
 
@@ -110,7 +114,7 @@ public class MergeSortingFileTask extends RecursiveAction {
 //            количество байтов, изначально доступных для чтеия
             int availableSize = mainFile.available();
 
-            System.out.println("[INFO] Total size: " + availableSize);
+            logger.debug(String.format("Total size: %s", availableSize));
 
 //            устанавливем первоначальный размер для чтения
             int sizeToRead = availableSize;
@@ -134,7 +138,7 @@ public class MergeSortingFileTask extends RecursiveAction {
 //                открываем главный файл для записи
                 FileOutputStream mainResult = new FileOutputStream(mainFileName);
 
-                System.out.println("[INFO] Writing result into file: '" + mainFileName + "'");
+                logger.debug(String.format("Writing result into file: ' %s'", mainFileName));
 
 //                записываем в него отсортированный массив
                 for (Integer aSort : sort) {
@@ -143,7 +147,7 @@ public class MergeSortingFileTask extends RecursiveAction {
 
                 mainResult.close();
 
-                System.out.println("[INFO] Task is complete");
+                logger.debug("Task is complete");
 
 //                закрываем текущую задачу
                 return;
@@ -153,15 +157,15 @@ public class MergeSortingFileTask extends RecursiveAction {
             tempFileName0 = File.createTempFile("bigSort", "tmp").getAbsolutePath();
             tempFileName1 = File.createTempFile("bigSort", "tmp").getAbsolutePath();
 
-            System.out.println("[INFO] Create temp file: '" + tempFileName0 + "'");
-            System.out.println("[INFO] Create temp file: '" + tempFileName1 + "'");
+            logger.debug(String.format("Create temp file: '%s'", tempFileName0));
+            logger.debug(String.format("Create temp file: '%s'", tempFileName1));
 
 //            открываем temp для записи
             FileOutputStream tempFileWrite0 = new FileOutputStream(tempFileName0);
             FileOutputStream tempFileWrite1 = new FileOutputStream(tempFileName1);
 
             while (availableSize > 0) {
-                System.out.println("[INFO] Riding size: " + sizeToRead);
+                logger.debug(String.format("Reading size: %s", sizeToRead));
 
 //                находим середину
                 int middleToRead = sizeToRead / 2;
@@ -179,7 +183,7 @@ public class MergeSortingFileTask extends RecursiveAction {
 //                перечитываем количество осавшихся байтов для чтения
                 sizeToRead = availableSize = mainFile.available();
 
-                System.out.println("[INFO] Total size: " + availableSize);
+                logger.debug(String.format("Total size: '%s'", availableSize));
             }
 
 //            закрываем все файлы
@@ -200,9 +204,10 @@ public class MergeSortingFileTask extends RecursiveAction {
             merge();
 
         } catch (FileNotFoundException e) {
-            System.err.println("[ERROR] File not found: '" + ApplicationProperties.getInFileName() + "'");
+            logger.error(String.format("File not found: '%s'",
+                    ApplicationProperties.getInFileName()));
         } catch (IOException e) {
-            System.err.println("[ERROR] I\\O error ");
+            logger.error("I/O error");
         }
     }
 }
