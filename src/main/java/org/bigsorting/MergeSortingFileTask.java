@@ -3,21 +3,24 @@
  * 13.11.12
  */
 
+package org.bigsorting;
+
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.RecursiveAction;
 
 
 public class MergeSortingFileTask extends RecursiveAction {
 
-    protected static Logger logger = Logger.getLogger(MergeSortingFileTask.class.getName());
+    protected static Logger     logger     = Logger.getLogger(MergeSortingFileTask.class.getName());
+    protected static Properties properties = new Properties();
 
     //    имя файла для обработки
     protected String mainFileName;
@@ -25,6 +28,15 @@ public class MergeSortingFileTask extends RecursiveAction {
     protected String tempFileName0;
     //    имя второго временного файла
     protected String tempFileName1;
+
+    static {
+        try {
+            properties.load(MergeSortingFileTask.class
+                    .getClassLoader().getResourceAsStream("org/bigsorting/config.properties"));
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
 
     /**
      * Задать файл для обработки.
@@ -108,6 +120,8 @@ public class MergeSortingFileTask extends RecursiveAction {
         }
 
         try {
+            int sizeArray = Integer.parseInt(properties.getProperty("sizeArray"));
+
 //            главный файл, с которго читаем
             FileInputStream mainFile = new FileInputStream(mainFileName);
 
@@ -120,9 +134,9 @@ public class MergeSortingFileTask extends RecursiveAction {
             int sizeToRead = availableSize;
 
 //            если читаемый кусок можно поместить в память и обработать, то его отправляем на сортировку
-            if (sizeToRead < ApplicationProperties.getSizeArray()) {
+            if (sizeToRead < sizeArray) {
 //                читаем данные из файла и запихиваем их в массив
-                ArrayList<Integer> data = new ArrayList<Integer>();
+                ArrayList<Integer> data = new ArrayList<>();
 
                 for (int i = 0; i < sizeToRead; i++) {
                     data.add(mainFile.read());
@@ -203,11 +217,8 @@ public class MergeSortingFileTask extends RecursiveAction {
 //           объединяем temp файлы
             merge();
 
-        } catch (FileNotFoundException e) {
-            logger.error(String.format("File not found: '%s'",
-                    ApplicationProperties.getInFileName()));
-        } catch (IOException e) {
-            logger.error("I/O error");
+        } catch (IOException | NumberFormatException e) {
+            logger.error(e.getMessage());
         }
     }
 }

@@ -3,10 +3,14 @@
  * 13.11.12
  */
 
+package org.bigsorting;
+
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.RecursiveTask;
 
 /**
@@ -14,9 +18,19 @@ import java.util.concurrent.RecursiveTask;
  */
 public class MergeSortingTask extends RecursiveTask {
 
-    protected static Logger logger = Logger.getLogger(MergeSortingTask.class.getName());
+    protected static Logger     logger     = Logger.getLogger(MergeSortingTask.class.getName());
+    protected static Properties properties = new Properties();
 
-    protected List<Integer> data = new ArrayList<Integer>();
+    protected List<Integer> data = new ArrayList<>();
+
+    static {
+        try {
+            properties.load(MergeSortingTask.class
+                    .getClassLoader().getResourceAsStream("org/bigsorting/config.properties"));
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
 
     /**
      * Установить массив для сортировки.
@@ -96,16 +110,25 @@ public class MergeSortingTask extends RecursiveTask {
     /**
      * Вычислительная часть задачи по сортировке массива.
      *
-     * @return Отсортированный массив.
+     * @return Отсортированный массив. При возникновении ошибки возвращает {@literal null}.
      */
     @Override
     protected Object compute() {
         logger.debug("Starting sort");
 
+        int hresholdMemory;
+
+        try {
+            hresholdMemory = Integer.parseInt(properties.getProperty("hresholdMemory"));
+        } catch (NumberFormatException e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+
         int dataSize = data.size();
 
 //        если мы достигли порогового значения
-        if (dataSize < ApplicationProperties.getThresholdMemory()) {
+        if (dataSize < hresholdMemory) {
 //            то выполняем сортировку своей части
             return sort(data);
         } else {
