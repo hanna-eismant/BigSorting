@@ -3,6 +3,8 @@
  * 13.11.12
  */
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
@@ -12,7 +14,9 @@ import java.util.concurrent.RecursiveTask;
  */
 public class MergeSortingTask extends RecursiveTask {
 
-    private List<Integer> data = new ArrayList<Integer>();
+    protected static Logger logger = Logger.getLogger(MergeSortingTask.class.getName());
+
+    protected List<Integer> data = new ArrayList<Integer>();
 
     /**
      * Установить массив для сортировки.
@@ -56,7 +60,7 @@ public class MergeSortingTask extends RecursiveTask {
      *
      * @return Отсортированный масссив, полученный при объединении входных.
      */
-    private List<Integer> merge(List<Integer> dataToMerge0, List<Integer> dataToMerge1) {
+    protected List<Integer> merge(List<Integer> dataToMerge0, List<Integer> dataToMerge1) {
 //        индекс просматривемого элемента первого массива
         int a = 0;
 //        индекс просматриваемого элемента второго массива
@@ -96,7 +100,7 @@ public class MergeSortingTask extends RecursiveTask {
      */
     @Override
     protected Object compute() {
-        System.out.println("[INFO] Starting sort");
+        logger.debug("Starting sort");
 
         int dataSize = data.size();
 

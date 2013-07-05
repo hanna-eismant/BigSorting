@@ -11,7 +11,7 @@ public final class ApplicationProperties {
     static {
         thresholdMemory = 32000;
         sizeArray = 128000;
-        inFileName = "/home/hanna/tosort.file";
+        inFileName = "/home/hanna.eismant/tosort.file";
     }
 
     public static int getThresholdMemory() {
