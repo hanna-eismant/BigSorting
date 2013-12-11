@@ -14,7 +14,7 @@ import java.util.Properties;
 import java.util.concurrent.RecursiveTask;
 
 /**
- * Сортировка массива слиянием. Сложность O(n log n).
+ * Merge sort Complexity O(n log n).
  */
 public class MergeSortingTask extends RecursiveTask {
 
@@ -33,20 +33,20 @@ public class MergeSortingTask extends RecursiveTask {
     }
 
     /**
-     * Установить массив для сортировки.
+     * Set array to sort.
      *
-     * @param pData Массив для сортировки.
+     * @param pData Array to sort.
      */
     public void setData(final List<Integer> pData) {
         data = pData;
     }
 
     /**
-     * Сортировка массива. Используется рекурсия. Выполняется сортировака по возрастанию.
+     * Sorting an array. Use recursion. Sort the in ascending order.
      *
-     * @param dataToSort Массив для сортировки.
+     * @param dataToSort Array to sort.
      *
-     * @return Отсортированный массив.
+     * @return Sorted array.
      */
     public List<Integer> sort(List<Integer> dataToSort) {
         int dataSize = dataToSort.size();
@@ -82,7 +82,7 @@ public class MergeSortingTask extends RecursiveTask {
 //        размер объединенного массива
         int mergedLen = dataToMerge0.size() + dataToMerge1.size();
 //        объединенный массив
-        List<Integer> merged = new ArrayList<Integer>(mergedLen);
+        List<Integer> merged = new ArrayList<>(mergedLen);
 
 //        количество посмотров\сравнений столько же, сколько элементов в результирующем массиве
         for (int i = 0; i < mergedLen; i++) {
